@@ -1,0 +1,61 @@
+
+name: mochi_tasks
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16 
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: pswd
+      POSTGRES_USER: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/data/db
+    networks:
+      - app_network
+  api:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules/
+    networks:
+      - app_network
+    # environment:
+    #   PORT: 4000
+    #   FRONT_END_URL: http://localhost:3000
+    #   DB_PASSWORD: pswd
+    #   DB_URI: postgresql://postgres:pswd@postgres:5432/mydatabase
+
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules/
+    networks:
+      - app_network
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge

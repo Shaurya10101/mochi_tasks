@@ -6,7 +6,7 @@ const sequelize = new Sequelize(config.databaseUri, {
   protocol: "postgres",
   dialectOptions: {
     ssl: {
-      require: true,  
+      require: false,  
       rejectUnauthorized: false, 
     },
   },

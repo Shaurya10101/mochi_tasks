@@ -13,8 +13,10 @@ services:
       POSTGRES_DB: mydatabase
     volumes:
       - postgres_data:/data/db
+      - ./certs:/data/certs
     networks:
       - app_network
+    command: ["postgres", "-c", "ssl=on", "-c", "ssl_cert_file=/data/certs/server.crt", "-c", "ssl_key_file=/data/certs/server.key"]
   api:
     build: 
       context: ./backend
